@@ -1,0 +1,27 @@
+name: CI - Qualité du code Python
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installation des dépendances
+        run: pip install -r requirements.txt
+
+      - name: Lancement des tests + couverture
+        run: pytest --cov=app --cov-report=term-missing
+
+      - name: Vérification du seuil de couverture
+        run: pytest --cov=app --cov-fail-under=80
