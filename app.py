@@ -6,7 +6,7 @@ def add(a: float, b: float) -> float:
     """
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
         raise TypeError(f"Opérandes invalides : {type(a)}, {type(b)}")
-    return a + b
+    return a - b
 
 
 def divide(a: float, b: float) -> float:
