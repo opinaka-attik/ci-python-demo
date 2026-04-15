@@ -1,34 +1,48 @@
+# Nom du workflow (affiché dans l’onglet Actions de GitHub)
 name: CI - Qualité du code Python
 
+# Déclencheurs : quand est-ce que le workflow s’exécute ?
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]        # Se lance à chaque push sur la branche main
   pull_request:
-    branches: [ main ]
+    branches: [ main ]        # Se lance à chaque Pull Request vers main
 
+# Définition des jobs (tâches automatisées)
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest    # Machine virtuelle utilisée (Linux Ubuntu)
 
+    # Permet de tester plusieurs versions de Python automatiquement
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
 
+    # Liste des étapes exécutées dans le job
     steps:
+      # Étape 1 : récupérer le code du dépôt
       - name: Récupération du code
         uses: actions/checkout@v4
 
+      # Étape 2 : installer Python selon la version de la matrice
       - name: Installation de Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: 'pip'   # Active le cache des dépendances pour accélérer
 
+      # Étape 3 : installer les dépendances du projet
       - name: Installation des dépendances
         run: pip install -r requirements.txt
 
+      # Étape 4 : analyser la qualité du code (linting)
       - name: Lint (ruff)
         run: ruff check .
+        # Vérifie les erreurs de style, bugs potentiels, etc.
 
+      # Étape 5 : exécuter les tests + mesurer la couverture
       - name: Tests + couverture + seuil
         run: pytest --cov=app --cov-report=term-missing --cov-fail-under=80
+        # --cov=app : mesure la couverture du dossier "app"
+        # --cov-report=term-missing : affiche les lignes non couvertes
+        # --cov-fail-under=80 : échoue si couverture < 80%
